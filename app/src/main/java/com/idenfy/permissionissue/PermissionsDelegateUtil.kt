@@ -9,24 +9,24 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 
-class PermissionsDelegateUtil {
-    fun hasCameraPermission(fragment: FragmentActivity): Boolean {
+class PermissionsDelegateUtil(val context: FragmentActivity) {
+    fun hasCameraPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
-                fragment,
+                context,
                 Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    fun requestCameraPermission(fragment: FragmentActivity) {
+    fun requestCameraPermission() {
         ActivityCompat.requestPermissions(
-                fragment,
+                context,
                 arrayOf(Manifest.permission.CAMERA),
                 REQUEST_PERMISSIONS_CAMERA
         )
     }
 
     fun resultGranted(
-            fragment: FragmentActivity, requestCode: Int,
+            requestCode: Int,
             permissions: Array<out String>,
             grantResults: IntArray
     ): PermissionResult {
@@ -46,7 +46,7 @@ class PermissionsDelegateUtil {
 
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (fragment.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                if (context.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
                     PermissionResult.PermissionNotGrantedRetryAuto
                 } else {
                     ///User selected don't show again checkbox.
