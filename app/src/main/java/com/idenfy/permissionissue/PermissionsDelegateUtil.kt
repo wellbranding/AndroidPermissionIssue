@@ -7,41 +7,39 @@ import android.util.Log
 import androidx.annotation.Keep
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 
 class PermissionsDelegateUtil {
     fun hasCameraPermission(fragment: FragmentActivity): Boolean {
         return ContextCompat.checkSelfPermission(
-            fragment,
-            Manifest.permission.CAMERA
+                fragment,
+                Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
     }
 
     fun requestCameraPermission(fragment: FragmentActivity) {
         ActivityCompat.requestPermissions(
-            fragment,
-            arrayOf(Manifest.permission.CAMERA),
-            REQUEST_PERMISSIONS_CAMERA
+                fragment,
+                arrayOf(Manifest.permission.CAMERA),
+                REQUEST_PERMISSIONS_CAMERA
         )
     }
 
     fun resultGranted(
-        fragment: FragmentActivity, requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+            fragment: FragmentActivity, requestCode: Int,
+            permissions: Array<out String>,
+            grantResults: IntArray
     ): PermissionResult {
         if (requestCode != REQUEST_PERMISSIONS_CAMERA) {
             Log.d(RESULT_TAG, "requestCode does not match")
-            return PermissionResult.PermissionNotGrantedDontAsk
+            return PermissionResult.PermissionNotGrantedBySystem
         }
         if (grantResults.isEmpty()) {
             Log.d(RESULT_TAG, "grantResults.isEmpty()")
-            return PermissionResult.PermissionNotGrantedDontAsk
+            return PermissionResult.PermissionNotGrantedBySystem
         }
         if (permissions[0] != Manifest.permission.CAMERA) {
-            Log.d(RESULT_TAG, "not camera")
-            return PermissionResult.PermissionNotGrantedDontAsk
+            return PermissionResult.PermissionNotGrantedBySystem
         }
         return if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             PermissionResult.PermissionGranted
@@ -68,9 +66,3 @@ class PermissionsDelegateUtil {
 
 }
 
-sealed class PermissionResult {
-    object PermissionGranted : PermissionResult()
-    object PermissionNotGrantedRetryAuto : PermissionResult()
-    object PermissionNotGrantedDontAsk : PermissionResult()
-    object PermissionNotGrantedCantRetry : PermissionResult()
-}

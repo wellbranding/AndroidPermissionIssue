@@ -1,15 +1,8 @@
 package com.idenfy.permissionissue
 
-import android.Manifest
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.single.PermissionListener
 
 
 class MainActivity : AppCompatActivity() {
@@ -17,16 +10,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Log.d(PermissionsDelegateUtil.RESULT_TAG, "onCreate")
-        if(!permissionsDelegateUtil.hasCameraPermission(this) && savedInstanceState==null) {
-            Log.d(PermissionsDelegateUtil.RESULT_TAG, "checking")
+        if (!permissionsDelegateUtil.hasCameraPermission(this) && savedInstanceState == null) {
+            Log.d(PermissionsDelegateUtil.RESULT_TAG, "checking permissions")
             permissionsDelegateUtil.requestCameraPermission(this)
-
         }
-
-
     }
-
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         val result = permissionsDelegateUtil.resultGranted(this, requestCode, permissions, grantResults)
@@ -34,19 +22,20 @@ class MainActivity : AppCompatActivity() {
         handleCameraPermissionResult(permissionResult = result)
     }
 
-    private fun handleCameraPermissionResult(permissionResult:PermissionResult){
-        when(permissionResult){
+    private fun handleCameraPermissionResult(permissionResult: PermissionResult) {
+        when (permissionResult) {
             PermissionResult.PermissionGranted -> {
-
+                //Permission was granted
             }
             PermissionResult.PermissionNotGrantedRetryAuto -> {
                 permissionsDelegateUtil.requestCameraPermission(this)
 
             }
             PermissionResult.PermissionNotGrantedCantRetry -> {
-                permissionsDelegateUtil.requestCameraPermission(this)
+                //Display a new window, explaining user to enable permission manually in the app system settings
             }
-            PermissionResult.PermissionNotGrantedDontAsk -> {
+            PermissionResult.PermissionNotGrantedBySystem -> {
+                //Permission request was canceled by a system, don't ask automatically again
             }
         }
     }
